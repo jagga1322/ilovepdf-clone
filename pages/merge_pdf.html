@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merge PDF - iLovePDF</title>
+    <meta name="description" content="Combine PDFs in the order you want with the easiest PDF merger available.">
+    <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .tool-page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tool-main {
+            flex: 1;
+            padding: 4rem 0;
+        }
+        
+        .tool-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .tool-title {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        
+        .tool-subtitle {
+            font-size: 1.2rem;
+            color: #5a6c7d;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .upload-section {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .drop-zone {
+            border: 2px dashed #e74c3c;
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            background: #fef9f9;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .drop-zone:hover,
+        .drop-zone.drag-over {
+            border-color: #c0392b;
+            background: #fdf2f2;
+        }
+        
+        .drop-zone-icon {
+            font-size: 3rem;
+            color: #e74c3c;
+            margin-bottom: 1rem;
+        }
+        
+        .drop-zone-text {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .drop-zone-subtext {
+            color: #5a6c7d;
+            font-size: 0.9rem;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .selected-files {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .file-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+        
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            background: #e74c3c;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .file-details h4 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 1rem;
+        }
+        
+        .file-details p {
+            margin: 0;
+            color: #5a6c7d;
+            font-size: 0.9rem;
+        }
+        
+        .remove-file {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .remove-file:hover {
+            background: #fef9f9;
+        }
+        
+        .process-section {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .process-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+        
+        .process-btn:hover:not(:disabled) {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+        
+        .process-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: none;
+        }
+        
+        .error-message {
+            background: #fdf2f2;
+            color: #e74c3c;
+            border: 1px solid #fadbd8;
+        }
+        
+        .loading-message {
+            background: #f0f8ff;
+            color: #3498db;
+            border: 1px solid #d6eaf8;
+        }
+        
+        .success-message {
+            background: #f0fff4;
+            color: #27ae60;
+            border: 1px solid #d5f4e6;
+        }
+        
+        .download-btn {
+            background: #27ae60;
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 1rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        
+        .download-btn:hover {
+            background: #229954;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: #e74c3c;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-spinner {
+            text-align: center;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body class="tool-page">
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <a href="../index.html"><h1>iLovePDF</h1></a>
+                </div>
+                <nav class="nav" id="nav">
+                    <ul class="nav-list">
+                        <li><a href="../index.html" class="nav-link">Home</a></li>
+                        <li><a href="#" class="nav-link">Pricing</a></li>
+                        <li><a href="#" class="nav-link">Security</a></li>
+                        <li><a href="#" class="nav-link">Tools</a></li>
+                        <li><a href="#" class="nav-link">FAQ</a></li>
+                    </ul>
+                </nav>
+                <div class="header-actions">
+                    <a href="#" class="login-link">Login</a>
+                    <a href="#" class="signup-btn">Sign up</a>
+                </div>
+                <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle mobile menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="tool-main">
+        <div class="container">
+            <a href="../index.html" class="back-link">← Back to Home</a>
+            
+            <div class="tool-header">
+                <h1 class="tool-title">Merge PDF</h1>
+                <p class="tool-subtitle">Combine PDFs in the order you want with the easiest PDF merger available.</p>
+            </div>
+
+            <div class="upload-section">
+                <div class="drop-zone" id="drop-zone">
+                    <div class="drop-zone-icon">📄</div>
+                    <div class="drop-zone-text">Select PDF files or drag & drop them here</div>
+                    <div class="drop-zone-subtext">You can select multiple PDF files to merge them into one document</div>
+                </div>
+                <input type="file" id="file-input" class="file-input" multiple accept=".pdf" aria-label="Select PDF files">
+                
+                <div class="selected-files" id="selected-files" style="display: none;">
+                    <h3>Selected Files:</h3>
+                    <ul class="file-list" id="file-list"></ul>
+                </div>
+            </div>
+
+            <div class="process-section">
+                <button class="process-btn" id="process-btn" disabled>Merge PDF Files</button>
+                
+                <div class="message" id="error-message"></div>
+                <div class="message" id="loading-message"></div>
+                <div class="message" id="result-message"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>iLovePDF</h4>
+                    <ul>
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#">Security</a></li>
+                        <li><a href="#">Tools</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#">iLovePDF Desktop</a></li>
+                        <li><a href="#">iLovePDF Mobile</a></li>
+                        <li><a href="#">Developers</a></li>
+                        <li><a href="#">Features</a></li>
+                        <li><a href="#">iloveimg.com</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Solutions</h4>
+                    <ul>
+                        <li><a href="#">Business</a></li>
+                        <li><a href="#">Education</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">Our Story</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Legal & Privacy</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-copyright">
+                <p>&copy; iLovePDF 2025 &reg; - Your PDF Editor</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropZone = document.getElementById('drop-zone');
+            const fileInput = document.getElementById('file-input');
+            const selectedFilesSection = document.getElementById('selected-files');
+            const fileList = document.getElementById('file-list');
+            const processBtn = document.getElementById('process-btn');
+            
+            // Initialize drag and drop
+            initializeDragAndDrop(dropZone, fileInput);
+            
+            // Handle drop zone click
+            dropZone.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            // Handle file selection
+            fileInput.addEventListener('change', function() {
+                const files = Array.from(this.files);
+                displaySelectedFiles(files);
+                processBtn.disabled = files.length === 0;
+            });
+            
+            // Handle process button click
+            processBtn.addEventListener('click', function() {
+                processFiles('Merge PDF', fileInput, ['.pdf']);
+            });
+            
+            function displaySelectedFiles(files) {
+                if (files.length === 0) {
+                    selectedFilesSection.style.display = 'none';
+                    return;
+                }
+                
+                selectedFilesSection.style.display = 'block';
+                fileList.innerHTML = '';
+                
+                files.forEach((file, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'file-item';
+                    li.innerHTML = `
+                        <div class="file-info">
+                            <div class="file-icon">PDF</div>
+                            <div class="file-details">
+                                <h4>${file.name}</h4>
+                                <p>${formatFileSize(file.size)}</p>
+                            </div>
+                        </div>
+                        <button class="remove-file" onclick="removeFile(${index})" aria-label="Remove file">×</button>
+                    `;
+                    fileList.appendChild(li);
+                });
+            }
+            
+            // Make removeFile function global
+            window.removeFile = function(index) {
+                const dt = new DataTransfer();
+                const files = Array.from(fileInput.files);
+                
+                files.forEach((file, i) => {
+                    if (i !== index) {
+                        dt.items.add(file);
+                    }
+                });
+                
+                fileInput.files = dt.files;
+                displaySelectedFiles(Array.from(fileInput.files));
+                processBtn.disabled = fileInput.files.length === 0;
+            };
+        });
+    </script>
+</body>
+</html>
